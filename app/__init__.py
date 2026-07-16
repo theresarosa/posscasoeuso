@@ -4,7 +4,9 @@ from http.client import HTTPException
 
 from .config import Config
 from .extensions import db, ma, migrate
-from .routes.messages import messages_bp
+from .routes.auth import auth_bp
+from .routes.participants import participants_bp
+from .routes.teams import teams_bp
 from .routes.users import users_bp
 
 
@@ -17,9 +19,11 @@ def create_app():
     migrate.init_app(app, db)
     ma.init_app(app)
 
-    from .models import message, user  # noqa: F401
+    from .models import participant, team, user  # noqa: F401
 
-    app.register_blueprint(messages_bp, url_prefix="/messages")
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(teams_bp, url_prefix="/teams")
+    app.register_blueprint(participants_bp, url_prefix="/participants")
     app.register_blueprint(users_bp, url_prefix="/users")
 
     @app.errorhandler(ValidationError)
@@ -28,14 +32,12 @@ def create_app():
 
     @app.errorhandler(404)
     def handle_404(err):
-        return {"success": False, "message": "Recurso nao encontrado"}, 404
+        return {"success": False, "message": "Recurso não encontrado"}, 404
 
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
-        # Passa o código de erro correto se for um HTTPException
         if isinstance(e, HTTPException):
             return e
-        # Se for uma exceção inesperada (ex: bug no Python), retorna 500
         return {"success": False, "message": "Erro interno do servidor"}, 500
-    
+
     return app

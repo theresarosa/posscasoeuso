@@ -1,0 +1,74 @@
+================================================================================
+                        API GINCANA - GUIA RAPIDO
+================================================================================
+
+
+1. CRIAR O .env (na pasta apirest, mesma do app.py)
+
+SECRET_KEY=minha_chave_secreta
+
+
+2. INSTALAR E RODAR (na pasta apirest)
+
+python -m venv venv
+
+Linux:
+  source venv/bin/activate
+
+Windows (CMD):
+  venv\Scripts\activate.bat
+
+Depois:
+  pip install -r requirements.txt
+  python -m flask db upgrade
+  python -m flask run
+
+Windows PowerShell bloqueou script?
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+
+3. POSTMAN
+
+Base: http://127.0.0.1:5000
+Body (quando precisar): raw -> JSON
+Token (quando precisar): Authorization -> Bearer Token
+
+
+================================================================================
+                              ROTAS
+================================================================================
+
+POST   /users
+Body: {"nome": "Admin", "email": "admin@email.com", "senha": "123456"}
+
+POST   /login
+Body: {"email": "admin@email.com", "senha": "123456"}
+
+GET    /users
+
+GET    /teams
+
+POST   /teams                          [precisa token]
+Body: {"nome": "Equipe Azul"}
+
+GET    /participants
+
+POST   /participants                   [precisa token]
+Body: {"nome": "Joao", "idade": 18, "team_id": 1}
+
+GET    /teams/1/participants
+
+PATCH  /users/1                        [precisa token]
+Body: {"nome": "Novo Nome"}
+
+DELETE /users/1                        [precisa token]
+
+
+================================================================================
+                         ORDEM NA AVALIACAO
+================================================================================
+
+1. POST /login
+2. GET  /teams
+3. POST /teams (sem token) -> 401
+4. POST /teams (com token) -> 201
